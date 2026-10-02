@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
-import pptxgen from 'pptxgenjs';
+import type pptxgen from 'pptxgenjs';
 import tinycolor from 'tinycolor2';
 import { saveAs } from 'file-saver';
 import { toast } from 'sonner';
@@ -23,7 +23,6 @@ import { getElementRange, getLineElementPath, getTableSubThemeColor } from '@/li
 import { type AST, toAST } from '@/lib/export/html-parser';
 import { type SvgPoints, toPoints, getSvgPathRange } from '@/lib/export/svg-path-parser';
 import { svg2Base64 } from '@/lib/export/svg2base64';
-import { latexToOmml } from '@/lib/export/latex-to-omml';
 import { createLogger } from '@/lib/logger';
 import { collectSpeechText } from './narration';
 import { inlineHtmlAssets, createAssetFetcher } from './inline-assets';
@@ -506,7 +505,13 @@ export async function buildPptxBlob(
   ratioPx2Pt: number,
   stageId?: string,
 ): Promise<Blob> {
-  const pptx = new pptxgen();
+  // pptxgenjs and the LaTeX -> OMML pipeline (temml + mathml2omml) are large and
+  // only needed once an export actually runs, so keep them out of the page bundle.
+  const [{ default: PptxGenJS }, { latexToOmml }] = await Promise.all([
+    import('pptxgenjs'),
+    import('@/lib/export/latex-to-omml'),
+  ]);
+  const pptx = new PptxGenJS();
   const documentElements = slides.flatMap((slide) => slide.elements);
   const manifestRefs = derivePptxMediaReferenceSet(slides);
   assertPptxMediaReferenceParity(slides, manifestRefs);
