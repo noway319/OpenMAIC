@@ -37,6 +37,8 @@ const eslintConfig = defineConfig([
     'packages/docs/**',
     'packages/mathml2omml/**',
     'packages/pptxgenjs/**',
+    // Third-party agent skills installed via `npx skills add`:
+    '.claude/skills/**',
     // Our own @openmaic/* packages: lint the source, but skip build output,
     // installed deps, and the vendored JS sources under importer/src1.
     'packages/@openmaic/*/dist/**',
