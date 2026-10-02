@@ -25,7 +25,6 @@ import { type SvgPoints, toPoints, getSvgPathRange } from '@/lib/export/svg-path
 import { svg2Base64 } from '@/lib/export/svg2base64';
 import { createLogger } from '@/lib/logger';
 import { collectSpeechText } from './narration';
-import { inlineHtmlAssets, createAssetFetcher } from './inline-assets';
 import type { FetchAsset } from './inline-assets';
 import { createProxiedFetch } from './proxied-fetch';
 import type { AssetUrlLeaseState } from '@/lib/media/use-asset-url';
@@ -1270,6 +1269,8 @@ export async function buildResourcePackZip(
   },
 ): Promise<ResourcePackResult> {
   const JSZip = (await import('jszip')).default;
+  // inline-assets pulls in postcss; load it only when an export actually runs.
+  const { inlineHtmlAssets } = await import('./inline-assets');
   const zip = new JSZip();
   const failedAssetUrls: string[] = [];
 
@@ -1388,6 +1389,7 @@ export function useExportPPTX() {
   const exportResourcePack = useCallback(() => {
     withExportGuard(async () => {
       const fileName = stage?.name || 'slides';
+      const { createAssetFetcher } = await import('./inline-assets');
       const sharedFetcher = createAssetFetcher({ fetchImpl: createProxiedFetch() });
 
       const result = await buildResourcePackZip(scenes, slides, slideScenes, {

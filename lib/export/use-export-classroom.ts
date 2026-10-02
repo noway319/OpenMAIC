@@ -27,12 +27,7 @@ import {
 } from './classroom-zip-utils';
 import { createLogger } from '@/lib/logger';
 import { buildStageAssetManifest } from '@/lib/media/asset-manifest';
-import {
-  inlineHtmlAssets,
-  createAssetFetcher,
-  type InlineOptions,
-  type InlineReport,
-} from './inline-assets';
+import type { InlineOptions, InlineReport } from './inline-assets';
 import { createProxiedFetch } from './proxied-fetch';
 import type { SceneContent, Scene, Stage } from '@/lib/types/stage';
 import { preparePBLScenesForDocumentPersistence } from '@/lib/pbl/v2/runtime/document-persistence';
@@ -45,6 +40,8 @@ export async function inlineSceneContent(
   if (content?.type !== 'interactive' || !('html' in content) || !content.html) {
     return { content, report: { inlined: [], failed: [] } };
   }
+  // inline-assets pulls in postcss; load it only when an export actually runs.
+  const { inlineHtmlAssets } = await import('./inline-assets');
   const { html, report } = await inlineHtmlAssets(content.html, options);
   return { content: { ...content, html }, report };
 }
@@ -153,6 +150,7 @@ export async function buildClassroomExportZip(
     const agentIdToIndex = new Map<string, number>();
     agentConfigs.forEach((a, i) => agentIdToIndex.set(a.id, i));
 
+    const { createAssetFetcher } = await import('./inline-assets');
     const sharedFetcher = createAssetFetcher({ fetchImpl: createProxiedFetch() });
     const manifestScenes: ManifestScene[] = await Promise.all(
       exportScenes.map(async (scene) => {
