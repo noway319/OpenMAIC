@@ -220,7 +220,9 @@ describe('entry point 3 — the settings entry in the rail’s foot cluster', ()
   });
 
   it('opens the model/provider dialog, mounted by the rail itself', () => {
-    expect(rail).toContain("import { SettingsDialog } from '@/components/settings'");
+    expect(rail).toContain(
+      "import { SettingsDialog } from '@/components/settings/lazy-settings-dialog'",
+    );
     expect(rail).toContain('<SettingsDialog');
     expect(rail).toContain('open={settingsOpen}');
     const trigger = rail.slice(rail.indexOf('data-testid="pro-nav-settings"'));

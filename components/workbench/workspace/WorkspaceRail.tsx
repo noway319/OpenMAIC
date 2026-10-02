@@ -98,7 +98,7 @@ import type { HomeDiscoveryState, useHomeDiscovery } from '@/lib/hooks/use-home-
 import { ProBadge } from '@/components/workbench/ProBadge';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { ThemeToggle } from '@/components/site-header/theme-toggle';
-import { SettingsDialog } from '@/components/settings';
+import { SettingsDialog } from '@/components/settings/lazy-settings-dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,

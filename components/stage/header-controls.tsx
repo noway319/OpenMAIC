@@ -27,7 +27,7 @@ import { useVideoRenderStore } from '@/lib/store/video-render';
 import { CircularProgress } from '@/components/ui/circular-progress';
 import { VideoExportDialog } from './video-export-dialog';
 import { LanguageSwitcher } from '../language-switcher';
-import { SettingsDialog } from '../settings';
+import { SettingsDialog } from '../settings/lazy-settings-dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
